@@ -1,0 +1,57 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_ai_control/ai_control_config
+
+    Template for the widget that shows the ai_control configuration to the teacher.
+
+    Example context (json):
+    {
+        "contextid": 25,
+        "checked": true,
+        "text": "Label for the main toggle",
+        "expiresat": 1707822000,
+        "purposes": [
+            {
+                "name": "chat",
+                "allowed": true
+            },
+            {
+                "name": "translate",
+                "allowed": false,
+            }
+        ]
+    }
+}}
+<div>
+    <div class="mb-2">
+        {{> local_ai_manager/toggle }}
+        <div data-ai-control="expirydate" class="text-center {{^checked}}d-none{{/checked}} mt-1">
+            <input name="expirydate" type="datetime-local" data-aiconfig-item="expiresat" value="{{expiresat}}">
+        </div>
+    </div>
+    <div data-ai-control="purposeslist" class="mb-2 {{^checked}}d-none{{/checked}}">
+        {{#purposes}}
+            <div>
+                {{> local_ai_manager/toggle }}
+            </div>
+        {{/purposes}}
+    </div>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" data-ai-config="submitbutton">{{#str}}savestate, block_ai_control{{/str}}</button>
+    </div>
+</div>
