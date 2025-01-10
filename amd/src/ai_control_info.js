@@ -24,6 +24,7 @@
 
 import {getAiconfig} from 'block_ai_control/repository';
 import Templates from 'core/templates';
+import {convertTargetUnixTimeToCountdown} from "./ai_control";
 
 let baseElement = null;
 let contextId = null;
@@ -74,13 +75,12 @@ const renderWidget = async(templateContext) => {
     clearInterval(countdownTimer);
     countdownTimer = setInterval(async() => {
         // We have to recalculate the distance, because "Date.now()" changes every second.
-        const distance = new Date(targetTime * 1000) - Date.now();
-
+        const {days, hours, minutes, seconds} = convertTargetUnixTimeToCountdown(targetTime);
         const countdownContext = {
-            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-            hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-            seconds: Math.floor((distance % (1000 * 60)) / 1000)
+            days,
+            hours,
+            minutes,
+            seconds
         };
         countdownContext.showDays = countdownContext.days > 0;
         countdownContext.showHours = countdownContext.showDays ? true : countdownContext.hours > 0;

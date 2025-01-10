@@ -23,6 +23,7 @@
  */
 
 import {updateAiconfig} from 'block_ai_control/repository';
+import {convertTargetUnixTimeToCountdown} from 'block_ai_control/ai_control';
 import Templates from 'core/templates';
 import {getString} from 'core/str';
 
@@ -43,6 +44,11 @@ export const init = async(element, aiconfig) => {
 
     templateContext.expiresat = new Date(parseInt(aiconfig.expiresatLocaltime) * 1000).toISOString().slice(0, 16);
 
+    const {days, hours, minutes} = convertTargetUnixTimeToCountdown(templateContext.expiresat);
+    templateContext.durationDays = days;
+    templateContext.durationHours = hours;
+    templateContext.durationMinutes = minutes;
+
     templateContext.purposes = [];
     aiconfig.purposes.forEach(purpose => {
         const purposeConfig = {
@@ -53,11 +59,30 @@ export const init = async(element, aiconfig) => {
         templateContext.purposes.push(purposeConfig);
     });
 
-
     const {html, js} = await Templates.renderForPromise('block_ai_control/ai_control_config', {...templateContext});
     Templates.replaceNodeContents(baseElement, html, js);
 
+    baseElement.querySelectorAll('[data-aiconfig-item^="switchexpiryview"]').forEach(button => {
+        button.addEventListener('click', () => {
+            const elementsToToggleVisibility = baseElement.querySelectorAll('[data-aiconfig-show]');
+            elementsToToggleVisibility.forEach(element => {
+                element.dataset.aiconfigShow = element.dataset.aiconfigShow === '1' ? '0' : '1';
+                element.classList.toggle('d-none');
+            });
+            // Important that we call this AFTER we changed the view. The function syncViews depends on that fact.
+            syncViews();
+        });
+    });
+
     baseElement.querySelector('[data-ai-config="submitbutton"]').addEventListener('click', async() => {
+        // If we are in date view, we just use the current date. If we are in duration view we need to sync the duration
+        // into the date, because when submitting the data we are using the date.
+        const currentExpiryView =
+            baseElement.querySelector('[data-aiconfig-item="switchexpiryviewduration"]').dataset.aiconfigShow === '0'
+                ? 'duration' : 'date';
+        if (currentExpiryView === 'duration') {
+            updateDateFromDuration();
+        }
         const refreshedData = await updateAiconfig(buildUpdateAiconfigObject());
         dispatchChangedEvent(refreshedData);
     });
@@ -106,4 +131,45 @@ const dispatchChangedEvent = (refreshedAiconfig) => {
             aiconfig: refreshedAiconfig
         }
     }));
+};
+
+const updateDateFromDuration = () => {
+    const expirydate = baseElement.querySelector('[data-aiconfig-item="expiresat"]');
+    const expirydurationDays = baseElement.querySelector('[data-aiconfig-item="expiryduration_days"]');
+    const expirydurationHours = baseElement.querySelector('[data-aiconfig-item="expiryduration_hours"]');
+    const expirydurationMinutes = baseElement.querySelector('[data-aiconfig-item="expiryduration_minutes"]');
+
+    const currentTime = new Date();
+    currentTime.setTime(currentTime.getTime() - currentTime.getTimezoneOffset() * 60 * 1000
+        + (expirydurationDays.value * 24 * 60 * 60 * 1000)
+        + (expirydurationHours.value * 60 * 60 * 1000)
+        + (expirydurationMinutes.value * 60 * 1000));
+    expirydate.value = currentTime.toISOString().slice(0, 16);
+};
+
+const updateDurationFromDate = () => {
+    const expirydate = baseElement.querySelector('[data-aiconfig-item="expiresat"]');
+    const expirydurationDays = baseElement.querySelector('[data-aiconfig-item="expiryduration_days"]');
+    const expirydurationHours = baseElement.querySelector('[data-aiconfig-item="expiryduration_hours"]');
+    const expirydurationMinutes = baseElement.querySelector('[data-aiconfig-item="expiryduration_minutes"]');
+
+    const unixtime = parseInt(+new Date(expirydate.value)) / 1000;
+    const {days, hours, minutes} = convertTargetUnixTimeToCountdown(unixtime);
+    expirydurationDays.value = days;
+    expirydurationHours.value = hours;
+    expirydurationMinutes.value = minutes;
+};
+
+const syncViews = () => {
+    // Will be called AFTER the switch has been done. So we will see the new state.
+    const currentExpiryView =
+        baseElement.querySelector('[data-aiconfig-item="switchexpiryviewduration"]').dataset.aiconfigShow === '0'
+            ? 'duration' : 'date';
+    // Now keep date view and duration view in sync if user just changed view.
+    if (currentExpiryView === 'duration') {
+        // We just switched to duration, so update the duration from the date values.
+        updateDurationFromDate();
+    } else {
+        updateDateFromDuration();
+    }
 };

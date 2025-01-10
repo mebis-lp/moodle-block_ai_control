@@ -42,7 +42,6 @@ export const init = async(selector) => {
 
     const aiconfig = await getAiconfig(contextid);
 
-
     if (controlArea) {
         await initControlArea(controlArea, aiconfig);
     }
@@ -50,4 +49,14 @@ export const init = async(selector) => {
     // It's important to render the info area AFTER the control area, because the info area needs to add
     // a change listener to the config area.
     await initInfoArea(infoArea, aiconfig);
+};
+
+export const convertTargetUnixTimeToCountdown = (unixTime) => {
+    const distance = new Date(unixTime * 1000) - Date.now();
+    return {
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+    };
 };
