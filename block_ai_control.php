@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use block_ai_control\local\aiconfig;
+use local_ai_manager\ai_manager_utils;
 use local_ai_manager\local\userinfo;
 
 /**
@@ -72,7 +74,7 @@ class block_ai_control extends block_base {
         }
         $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
         $configmanager = \core\di::get(\local_ai_manager\local\config_manager::class);
-        $aiconfig = \local_ai_manager\ai_manager_utils::get_ai_config($USER);
+        $aiconfig = ai_manager_utils::get_ai_config($USER);
         $chatconfig = array_values(array_filter($aiconfig['purposes'], fn($purpose) => $purpose['purpose'] === 'chat'))[0];
         if (!$tenant->is_tenant_allowed()) {
             return $this->content;
@@ -90,7 +92,7 @@ class block_ai_control extends block_base {
 
         $this->content = new stdClass;
 
-        $coursecontext = \local_ai_manager\ai_manager_utils::find_closest_parent_course_context($context);
+        $coursecontext = ai_manager_utils::find_closest_parent_course_context($context);
         if (is_null($coursecontext)) {
             throw new \coding_exception('Could not find parent course context for block instance. '
                     . 'Other situations are not supported (yet).');
@@ -107,9 +109,17 @@ class block_ai_control extends block_base {
      *
      * @return bool
      */
-    #[\Override]
     public function instance_allow_multiple(): bool {
         return false;
+    }
+
+    #[\Override]
+    public function instance_delete(): bool {
+        $context = \context_block::instance($this->instance->id);
+        $coursecontext = ai_manager_utils::find_closest_parent_course_context($context);
+        $aiconfig = new aiconfig($coursecontext->id);
+        $aiconfig->delete();
+        return true;
     }
 
     /**

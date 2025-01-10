@@ -107,7 +107,8 @@ class aiconfig {
 
         $record->contextid = $this->context->id;
         $record->enabled = $this->enabled ? self::ENABLED : self::DISABLED;
-        $record->expiresat = $this->expiresat;
+        // Set default to 90 minutes.
+        $record->expiresat = $this->expiresat !== 0 ? $this->expiresat : $clock->time() + 90 * MINSECS;
         $record->enabledpurposes = implode(';', $this->enabledpurposes);
         $record->usermodified = $USER->id;
         $record->timemodified = $clock->time();
@@ -118,6 +119,16 @@ class aiconfig {
         } else {
             $DB->insert_record('block_ai_control_config', $record);
         }
+    }
+
+    /**
+     * Deletes the configuration from the config table.
+     *
+     * Will be called when block instance is being deleted.
+     */
+    public function delete(): void {
+        global $DB;
+        $DB->delete_records('block_ai_control_config', ['contextid' => $this->context->id]);
     }
 
     /**

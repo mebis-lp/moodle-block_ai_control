@@ -82,6 +82,8 @@ class hook_callbacks {
                 $newinstance->timecreated = $clock->time();
                 $newinstance->timemodified = $newinstance->timecreated;
                 $newinstance->id = $DB->insert_record('block_instances', $newinstance);
+                $aiconfig = new aiconfig($coursecontextid);
+                $aiconfig->store();
             }
         } else {
             // If tenant is not allowed, $data->addaicontrol will be empty,
@@ -132,7 +134,8 @@ class hook_callbacks {
             return;
         }
         $aiconfig = new aiconfig($coursecontext->id);
-        if (!$aiconfig->is_enabled() || !in_array($hook->get_purpose()->get_plugin_name(), $aiconfig->get_enabledpurposes())) {
+        if (!$aiconfig->record_exists() || !$aiconfig->is_enabled() ||
+                !in_array($hook->get_purpose()->get_plugin_name(), $aiconfig->get_enabledpurposes())) {
             if (!has_capability('block/ai_control:control', $coursecontext)) {
                 $hook->set_access_allowed(false, 403, get_string('notallowedincourse', 'block_ai_control'));
             }

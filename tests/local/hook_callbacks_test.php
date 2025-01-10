@@ -34,6 +34,8 @@ final class hook_callbacks_test extends \advanced_testcase {
      *
      * @dataProvider handle_additional_user_restriction_provider
      * @covers       \block_ai_control\local\hook_callbacks::handle_additional_user_restriction
+     * @param bool $aiconfigexists if there exists an aiconfig. It will exist if a block exists in a course so it is equivalent to
+     *  the fact that the teacher has adden an AI control center block in the course.
      * @param bool $enabled if the AI config for the test course should be enabled (and a time in the future is being set so that
      *  AI tools are indeed accessible)
      * @param bool $purposeenabled if the purpose which is being used for testing is enabled in the AI config in the course
@@ -42,8 +44,8 @@ final class hook_callbacks_test extends \advanced_testcase {
      *  means the user usually has the teacher role in the course
      * @param bool $expected the expected output: true, if the hook is allowing access, false otherwise
      */
-    public function test_handle_additional_user_restriction(bool $enabled, bool $purposeenabled, bool $coursecontext,
-            bool $controlcapability, bool $expected): void {
+    public function test_handle_additional_user_restriction(bool $aiconfigexists,
+            bool $enabled, bool $purposeenabled, bool $coursecontext, bool $controlcapability, bool $expected): void {
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
@@ -58,15 +60,17 @@ final class hook_callbacks_test extends \advanced_testcase {
 
         $purposestring = 'chat';
         $purpose = \core\di::get(\local_ai_manager\local\connector_factory::class)->get_purpose_by_purpose_string($purposestring);
-        $aiconfig = new aiconfig(\context_course::instance($course->id)->id);
-        $aiconfig->set_enabled($enabled);
-        $aiconfig->set_expiresat(-1);
-        $enabledpurposes = [];
-        if ($purposeenabled) {
-            $enabledpurposes[] = $purposestring;
+        if ($aiconfigexists) {
+            $aiconfig = new aiconfig(\context_course::instance($course->id)->id);
+            $aiconfig->set_enabled($enabled);
+            $aiconfig->set_expiresat(-1);
+            $enabledpurposes = [];
+            if ($purposeenabled) {
+                $enabledpurposes[] = $purposestring;
+            }
+            $aiconfig->set_enabledpurposes($enabledpurposes);
+            $aiconfig->store();
         }
-        $aiconfig->set_enabledpurposes($enabledpurposes);
-        $aiconfig->store();
 
         // We do not use this. The hook provides it however, so we create a default userinfo object to pass it to the hook.
         $userinfo = new userinfo($user->id);
@@ -87,12 +91,18 @@ final class hook_callbacks_test extends \advanced_testcase {
      */
     public static function handle_additional_user_restriction_provider(): array {
         $allgoodconfig = [
+                'aiconfigexists' => true,
                 'enabled' => true,
                 'purposeenabled' => true,
                 'coursecontext' => true,
                 'controlcapability' => false,
         ];
         return [
+                'noaiconfig' => [
+                        ...$allgoodconfig,
+                        'aiconfigexists' => false,
+                        'expected' => false,
+                ],
                 'studentallowed' => [
                         ...$allgoodconfig,
                         'expected' => true,
