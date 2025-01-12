@@ -65,9 +65,6 @@ class aiconfig_exporter extends exporter {
                 'expiresatFormatted' => [
                         'type' => PARAM_TEXT,
                 ],
-                'expiresatLocaltime' => [
-                        'type' => PARAM_INT,
-                ],
         ];
     }
 
@@ -90,14 +87,9 @@ class aiconfig_exporter extends exporter {
      * @return array array of additional data
      */
     protected function get_other_values(renderer_base $output): array {
-        $localtime = new \DateTime();
-        $localtime->setTimestamp($this->related['aiconfig']->get_expiresat());
-        $localtime->setTimezone(core_date::get_user_timezone_object());
-
         return [
                 'expiresatFormatted' => userdate($this->related['aiconfig']->get_expiresat(),
                         get_string('strftimedatetime', 'langconfig')),
-                'expiresatLocaltime' => $localtime->getTimestamp() + $localtime->getOffset(),
         ];
     }
 

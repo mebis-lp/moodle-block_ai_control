@@ -96,6 +96,5 @@ class update_aiconfig extends external_api {
         return new external_function_parameters([
                 'aiconfig' => $aiupdatestructure,
         ]);
-
     }
 }
