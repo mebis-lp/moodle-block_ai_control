@@ -31,6 +31,7 @@ $string['ai_control:myaddinstance'] = 'AI control center to the dashboard';
 $string['ai_control:view'] = 'Show AI control center';
 $string['aidisabled'] = 'KI deaktiviert';
 $string['aienabled'] = 'KI aktiviert';
+$string['error_targettimeinpast'] = 'The target time is in the past. Please select a time in the future.';
 $string['notallowedincourse'] = 'At the moment you are not allowed to use this AI tool in this course.';
 $string['pluginname'] = 'AI control center';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';

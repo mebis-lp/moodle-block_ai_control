@@ -31,6 +31,7 @@ $string['ai_control:myaddinstance'] = 'KI-Kontrollzentrum-Block zu meiner Starts
 $string['ai_control:view'] = 'KI-Kontrollzentrum anzeigen';
 $string['aidisabled'] = 'KI deaktiviert';
 $string['aienabled'] = 'KI aktiviert';
+$string['error_targettimeinpast'] = 'Der Zielzeitpunkt liegt in der Vergangenheit. Bitte einen Zeitpunkt in der Zukunft auswählen.';
 $string['notallowedincourse'] = 'In diesem Kurs ist die Verwendung dieses KI-Tools aktuell nicht erlaubt.';
 $string['pluginname'] = 'KI-Kontrollzentrum';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';

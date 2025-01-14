@@ -26,6 +26,7 @@ import {updateAiconfig} from 'block_ai_control/repository';
 import {convertTargetUnixTimeToCountdown} from 'block_ai_control/ai_control';
 import Templates from 'core/templates';
 import {getString} from 'core/str';
+import {alert as moodleAlert} from 'core/notification';
 
 let baseElement = null;
 
@@ -80,6 +81,11 @@ export const init = async(element, aiconfig) => {
 
     baseElement.querySelector('[data-aicontrol="submitbutton"]').addEventListener('click', async() => {
         updateTargetTime();
+        const currentTime = new Date();
+        if (Math.floor(currentTime.getTime() / 1000) > currentTargetTime) {
+            await moodleAlert(getString('error', 'core'), getString('error_targettimeinpast', 'block_ai_control'));
+            return;
+        }
         const refreshedData = await updateAiconfig(buildUpdateAiconfigObject());
         dispatchChangedEvent(refreshedData);
     });
