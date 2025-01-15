@@ -28,16 +28,16 @@
 }}
 <div id="block_ai_control-info-{{uniqid}}" data-expiresat="{{expiresat}}">
     {{#enabled}}
-        <h3 class="text-center text-success">{{#str}}aienabled, block_ai_control{{/str}}</h3>
+        <h3 class="text-center text-success" data-aicontrol-item="aienabled">{{#str}}aienabled, block_ai_control{{/str}}</h3>
         <div class="alert {{#warning}}alert-danger{{/warning}}{{^warning}}alert-info{{/warning}}">
             <div class="small font-italic">{{#str}}unlockeduntil, block_ai_control{{/str}}</div>
             <div>
-                <div class="d-flex justify-content-center font-weight-bold" data-ai-control="targetdate">{{expiresatFormatted}}</div>
-                <div class="d-flex justify-content-center font-weight-bold" data-ai-control="countdown"></div>
+                <div class="d-flex justify-content-center font-weight-bold" data-aicontrol="targetdate">{{expiresatFormatted}}</div>
+                <div class="d-flex justify-content-center font-weight-bold" data-aicontrol="countdown"></div>
             </div>
         </div>
     {{/enabled}}
     {{^enabled}}
-        <h3 class="text-center text-danger">{{#str}}aidisabled, block_ai_control{{/str}}</h3>
+        <h3 class="text-center text-danger" data-aicontrol-item="aidisabled">{{#str}}aidisabled, block_ai_control{{/str}}</h3>
     {{/enabled}}
 </div>

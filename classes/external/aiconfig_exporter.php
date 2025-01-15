@@ -65,6 +65,9 @@ class aiconfig_exporter extends exporter {
                 'expiresatFormatted' => [
                         'type' => PARAM_TEXT,
                 ],
+                'infoText' => [
+                        'type' => PARAM_RAW,
+                ],
         ];
     }
 
@@ -90,6 +93,7 @@ class aiconfig_exporter extends exporter {
         return [
                 'expiresatFormatted' => userdate($this->related['aiconfig']->get_expiresat(),
                         get_string('strftimedatetime', 'langconfig')),
+                'infoText' => get_config('block_ai_control', 'infotext'),
         ];
     }
 

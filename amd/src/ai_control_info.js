@@ -41,7 +41,7 @@ export const init = async(element, aiconfig) => {
     contextId = aiconfig.id;
     await renderWidget(aiconfig);
 
-    const controlArea = baseElement.parentElement.querySelector('[data-ai-control="config"]');
+    const controlArea = baseElement.parentElement.querySelector('[data-aicontrol="config"]');
     if (controlArea) {
         controlArea.addEventListener('aiconfigUpdated', async(event) => {
             const aiconfig = event.detail.aiconfig;
@@ -70,7 +70,7 @@ const renderWidget = async(templateContext) => {
     const {html, js} = await Templates.renderForPromise('block_ai_control/ai_control_info', {...templateContext});
     Templates.replaceNodeContents(baseElement, html, js);
 
-    const countdownElement = baseElement.querySelector('[data-ai-control="countdown"]');
+    const countdownElement = baseElement.querySelector('[data-aicontrol="countdown"]');
 
     clearInterval(countdownTimer);
     countdownTimer = setInterval(async() => {
@@ -93,6 +93,7 @@ const renderWidget = async(templateContext) => {
         if (templateContext.enabled && distance <= 0) {
             clearInterval(countdownTimer);
             const aiconfig = await getAiconfig(contextId);
+            // We clone the aiconfig object just as precaution, so it will not be altered by the init function.
             await init(baseElement, {...aiconfig});
         }
     }, 1000);

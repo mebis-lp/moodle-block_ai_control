@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for block_ai_control
+ * Settings for the block_ai_control plugin.
  *
  * @package    block_ai_control
  * @copyright  2024 ISB Bayern
@@ -23,13 +23,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->release = '0.0.1';
-$plugin->version = 2025011500;
-$plugin->requires = 2024042200;
-$plugin->component = 'block_ai_control';
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->dependencies = [
-    'local_ai_manager' => 2025010702,
-];
+if ($hassiteconfig) {
+
+    $ADMIN->add('blocksettings', new admin_category('block_ai_control_settings',
+            new lang_string('pluginname', 'block_ai_control')));
+
+    if ($ADMIN->fulltree) {
+        $settings->add(new admin_setting_confightmleditor('block_ai_control/infotext',
+                new lang_string('infotext', 'block_ai_control'),
+                new lang_string('infotextdesc', 'block_ai_control'),
+                '',
+        ));
+    }
+}

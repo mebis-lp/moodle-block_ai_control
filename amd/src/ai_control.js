@@ -37,8 +37,8 @@ let baseElement = null;
 export const init = async(selector) => {
     baseElement = document.querySelector(selector);
     const contextid = baseElement.dataset.contextid;
-    const infoArea = baseElement.querySelector('[data-ai-control="info"]');
-    const controlArea = baseElement.querySelector('[data-ai-control="config"]');
+    const infoArea = baseElement.querySelector('[data-aicontrol="info"]');
+    const controlArea = baseElement.querySelector('[data-aicontrol="config"]');
 
     const aiconfig = await getAiconfig(contextid);
 

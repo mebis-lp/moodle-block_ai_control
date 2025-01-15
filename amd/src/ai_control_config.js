@@ -27,8 +27,11 @@ import {convertTargetUnixTimeToCountdown} from 'block_ai_control/ai_control';
 import Templates from 'core/templates';
 import {getString} from 'core/str';
 import {alert as moodleAlert} from 'core/notification';
+import ModalSaveCancel from 'core/modal_save_cancel';
+import ModalEvents from 'core/modal_events';
 
 let baseElement = null;
+let aiconfig = null;
 
 /**
  * @type {number} The target time as unix timestamp (seconds since 1/1/1970).
@@ -38,14 +41,17 @@ let baseElement = null;
  */
 let currentTargetTime = 0;
 
+
 /**
  * Init the handler for the control area of block_ai_control.
  *
  * @param {HTMLElement} element the HTML element of the control area
- * @param {object} aiconfig the aiconfig which has been fetched from the external function
+ * @param {object} aiconfigObject the aiconfig which has been fetched from the external function
  */
-export const init = async(element, aiconfig) => {
+export const init = async(element, aiconfigObject) => {
+    aiconfig = aiconfigObject;
     baseElement = element;
+
     const templateContext = {};
     templateContext.identifier = 'aiconfig_enabled';
     templateContext.text = await getString('toggleai', 'block_ai_control');
@@ -80,19 +86,47 @@ export const init = async(element, aiconfig) => {
     });
 
     baseElement.querySelector('[data-aicontrol="submitbutton"]').addEventListener('click', async() => {
-        updateTargetTime();
-        const currentTime = new Date();
-        if (Math.floor(currentTime.getTime() / 1000) > currentTargetTime) {
-            await moodleAlert(getString('error', 'core'), getString('error_targettimeinpast', 'block_ai_control'));
-            return;
-        }
-        const refreshedData = await updateAiconfig(buildUpdateAiconfigObject());
-        dispatchChangedEvent(refreshedData);
+        await handleSubmitButtonClick();
     });
     baseElement.querySelector('[data-toggle-identifier="aiconfig_enabled"] input').addEventListener('change', () => {
         baseElement.querySelector('[data-aicontrol="purposeslist"]').classList.toggle('d-none');
         baseElement.querySelector('[data-aicontrol="expirydate"]').classList.toggle('d-none');
     });
+};
+
+const handleSubmitButtonClick = async() => {
+    updateTargetTime();
+    const currentTime = new Date();
+    if (Math.floor(currentTime.getTime() / 1000) > currentTargetTime) {
+        await moodleAlert(getString('error', 'core'), getString('error_targettimeinpast', 'block_ai_control'));
+        return;
+    }
+
+    // We check if we have to show the modal here: We only show the modal if the current enabled state is false and at the same time
+    // are switching from false to true.
+    const isCurrentlyDisabled = aiconfig.enabled === false
+        && baseElement.parentElement.querySelector('[data-toggle-identifier="aiconfig_enabled"]').dataset.checked === '1';
+
+    if (aiconfig.infoText.length > 0 && isCurrentlyDisabled) {
+        const infoModal = await ModalSaveCancel.create({
+            title: getString('infotextmodalheading', 'block_ai_control'),
+            body: aiconfig.infoText,
+            show: true,
+            buttons: {
+                'save': getString('confirm', 'moodle'),
+                'cancel': getString('cancel', 'moodle'),
+            },
+        });
+        infoModal.getRoot().on(ModalEvents.save, async() => {
+            const refreshedData = await updateAiconfig(buildUpdateAiconfigObject());
+            aiconfig = refreshedData;
+            dispatchChangedEvent(refreshedData);
+        });
+    } else {
+        const refreshedData = await updateAiconfig(buildUpdateAiconfigObject());
+        aiconfig = refreshedData;
+        dispatchChangedEvent(refreshedData);
+    }
 };
 
 /**
