@@ -31,5 +31,5 @@ $plugin->requires = 2024042200;
 $plugin->component = 'block_ai_control';
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = [
-    'local_ai_manager' => 2025010702,
+    'local_ai_manager' => 2025012700,
 ];
