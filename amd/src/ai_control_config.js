@@ -51,11 +51,14 @@ let currentTargetTime = 0;
 export const init = async(element, aiconfigObject) => {
     aiconfig = aiconfigObject;
     baseElement = element;
+    const contextid = baseElement.parentElement.dataset.contextid;
 
     const templateContext = {};
     templateContext.identifier = 'aiconfig_enabled';
     templateContext.text = await getString('toggleai', 'block_ai_control');
     templateContext.checked = aiconfig.enabled;
+    templateContext.coursecontextid = contextid;
+    templateContext.showviewprompts = aiconfig.showviewprompts;
 
     currentTargetTime = aiconfig.expiresat;
 

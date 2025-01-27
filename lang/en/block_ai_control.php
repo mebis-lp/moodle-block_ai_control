@@ -41,3 +41,4 @@ $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['savestate'] = 'Save';
 $string['toggleai'] = 'AI functions on/off';
 $string['unlockeduntil'] = 'Unlocked until:';
+$string['viewprompts'] = 'View prompts';

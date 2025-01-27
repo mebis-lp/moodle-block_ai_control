@@ -41,3 +41,4 @@ $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen D
 $string['savestate'] = 'Speichern';
 $string['toggleai'] = 'KI-Funktionen an/aus';
 $string['unlockeduntil'] = 'Freigeschaltet bis:';
+$string['viewprompts'] = 'Prompts einsehen';

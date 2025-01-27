@@ -68,6 +68,9 @@ class aiconfig_exporter extends exporter {
                 'infoText' => [
                         'type' => PARAM_RAW,
                 ],
+                'showviewprompts' => [
+                        'type' => PARAM_BOOL,
+                ],
         ];
     }
 
@@ -94,6 +97,7 @@ class aiconfig_exporter extends exporter {
                 'expiresatFormatted' => userdate($this->related['aiconfig']->get_expiresat(),
                         get_string('strftimedatetime', 'langconfig')),
                 'infoText' => get_config('block_ai_control', 'infotext'),
+                'showviewprompts' => has_capability('local/ai_manager:viewprompts', $this->related['context']),
         ];
     }
 
