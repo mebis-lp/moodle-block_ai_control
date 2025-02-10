@@ -74,7 +74,6 @@ const renderWidget = async(templateContext) => {
 
     clearInterval(countdownTimer);
     countdownTimer = setInterval(async() => {
-        // We have to recalculate the distance, because "Date.now()" changes every second.
         const {days, hours, minutes, seconds} = convertTargetUnixTimeToCountdown(targetTime);
         const countdownContext = {
             days,
@@ -89,6 +88,9 @@ const renderWidget = async(templateContext) => {
 
         const {html, js} = await Templates.renderForPromise('block_ai_control/ai_control_countdown', countdownContext);
         Templates.replaceNodeContents(countdownElement, html, js);
+
+        // We have to recalculate the distance, because "Date.now()" changes every second.
+        const distance = targetTime * 1000 - Date.now();
         // In the case that the AI is enabled, but the countdown has run to 0, we have to reload the whole info widget.
         if (templateContext.enabled && distance <= 0) {
             clearInterval(countdownTimer);
