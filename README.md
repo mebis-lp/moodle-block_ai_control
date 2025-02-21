@@ -2,6 +2,14 @@
 
 This plugin provides teachers the possiblity to configure the access to AI tools from inside a course.
 
+Please be aware that this is only compatible with the AI tools suite around the local_ai_manager backend,
+not the moodle core AI subsystem.
+
+Plugins this is compatible with are for example:
+- block_ai_chat
+- tiny_ai
+- qtype_aitext
+
 ## Requirements
 
 https://github.com/mebis-lp/moodle-local_ai_manager needs to be installed.
@@ -28,6 +36,15 @@ Alternatively, you can run
     $ php admin/cli/upgrade.php
 
 to complete the installation from the command line.
+
+## Using it in a course ##
+
+By default the installation of this plugin locks access to AI tools inside a course
+for student users (users without the capability "block/ai_control:control").
+
+As an instructor you can add an instance of the AI control center block to your course
+by ticking the checkbox in the course settings (section "AI functionalities"). Now, you
+can enable your students to use AI tools inside the course.
 
 ## License ##
 
