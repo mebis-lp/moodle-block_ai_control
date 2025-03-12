@@ -16,6 +16,7 @@
 
 namespace block_ai_control\local;
 
+use block_ai_control\event\ai_control_config_changed;
 use context;
 
 /**
@@ -99,7 +100,7 @@ class aiconfig {
      * This method will overwrite the current record in the database with the values in the object.
      */
     public function store(): void {
-        global $DB, $USER;
+        global $DB;
         $clock = \core\di::get(\core\clock::class);
         $currentrecord = $DB->get_record('block_ai_control_config', ['contextid' => $this->context->id]);
         $recordexists = $currentrecord !== false;
@@ -110,15 +111,17 @@ class aiconfig {
         // Set default to 90 minutes.
         $record->expiresat = $this->expiresat !== 0 ? $this->expiresat : $clock->time() + 90 * MINSECS;
         $record->enabledpurposes = implode(';', $this->enabledpurposes);
-        $record->usermodified = $USER->id;
         $record->timemodified = $clock->time();
 
         if ($recordexists) {
             $record->id = $currentrecord->id;
             $DB->update_record('block_ai_control_config', $record);
         } else {
-            $DB->insert_record('block_ai_control_config', $record);
+            $record->id = $DB->insert_record('block_ai_control_config', $record);
         }
+        $configchangedevent = ai_control_config_changed::create_from_data($this->context, $this, $record->id);
+        $configchangedevent->add_record_snapshot('block_ai_control_config', $record);
+        $configchangedevent->trigger();
     }
 
     /**

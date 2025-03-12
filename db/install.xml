@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/ai_control/db" VERSION="20241229" COMMENT="XMLDB file for Moodle blocks/ai_control"
+<XMLDB PATH="blocks/ai_control/db" VERSION="20250304" COMMENT="XMLDB file for Moodle blocks/ai_control"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -11,12 +11,10 @@
         <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If AI tools are enabled"/>
         <FIELD NAME="expiresat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp the activation will end"/>
         <FIELD NAME="enabledpurposes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contains the enabled purposes in a course"/>
-        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="contextid" TYPE="foreign-unique" FIELDS="contextid" REFTABLE="context" REFFIELDS="id" COMMENT="Forein key to the context table"/>
       </KEYS>
     </TABLE>
