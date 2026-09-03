@@ -24,7 +24,7 @@
         "contextid": 25,
         "checked": true,
         "text": "Label for the main toggle",
-        "expiresat": 1707822000,
+        "expiresat": "2024-02-13T12:00",
         "purposes": [
             {
                 "purposename": "chat",
@@ -35,10 +35,10 @@
             },
             {
                 "purposename": "translate",
-                "checked": "false",
+                "checked": false,
                 "identifier": "purpose_translate",
                 "text": "Translate",
-                "allowed": false,
+                "allowed": false
             }
         ]
     }
@@ -49,9 +49,9 @@
         <div data-aicontrol="expirydate" class="text-center {{^checked}}d-none{{/checked}} mt-1">
             <input name="expirydate" type="datetime-local" data-aicontrol-item="expirydate" data-aicontrol-show="1" value="{{expiresat}}">
             <span data-aicontrol-item="expiryduration" data-aicontrol-show="0" class="d-none">
-                <input data-aicontrol-item="expiryduration_days" type="number" min="0" max="365" width="3" value="{{durationDays}}"> d
-                <input data-aicontrol-item="expiryduration_hours" type="number" min="0" max="24" width="2" value="{{durationHours}}"> h
-                <input data-aicontrol-item="expiryduration_minutes" type="number" min="0" max="60" width="2" value="{{durationMinutes}}"> m
+                <input data-aicontrol-item="expiryduration_days" type="number" min="0" max="365" value="{{durationDays}}"> d
+                <input data-aicontrol-item="expiryduration_hours" type="number" min="0" max="24" value="{{durationHours}}"> h
+                <input data-aicontrol-item="expiryduration_minutes" type="number" min="0" max="60" value="{{durationMinutes}}"> m
             </span>
             <button class="btn btn-icon" data-aicontrol-item="switchexpiryviewduration" data-aicontrol-show="1"><i class="fa fa-clock"></i></button>
             <button class="btn btn-icon d-none" data-aicontrol-item="switchexpiryviewdate" data-aicontrol-show="0"><i class="fa fa-calendar"></i></button>
